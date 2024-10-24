@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get-accounts-from-salesforce"
+		doc:id="ff450f90-b17b-48b3-af4e-b0c5fa06e323">
+		<salesforce:query doc:name="Select All"
+			doc:id="1bd27f5b-6669-4955-b52f-17711e6836f7"
+			config-ref="Salesforce_Config">
+			<salesforce:salesforce-query><![CDATA[SELECT FIELDS(all) FROM Account LIMIT 200
+]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Java to Json"
+			doc:id="2f432dec-26cf-431c-9bc6-99d61b566640">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpStatus" ><![CDATA[200]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="End Request"
+			doc:id="c0247adc-baa1-42a5-9a8f-4bba6f020bfc"
+			message="After salesforce get account request test" />
+	</flow>
+
+	<flow name="post-account"
+		doc:id="e339be4f-edd1-406f-8054-469424cade57">
+
+		<ee:transform doc:name="Prepare request payload"
+			doc:id="33da35d4-a345-4fc0-9c41-63cefa1ae11d">
+			<ee:message>
+				<ee:set-payload
+					resource="dwl/createAccountRequest.dwl" />
+			</ee:message>
+		</ee:transform>
+
+		<salesforce:create doc:name="Create Account"
+			doc:id="a60e0239-308b-4ea5-b56a-f3fe9c243c1b"
+			config-ref="Salesforce_Config" type="Account" target="responseData" />
+		<logger level="DEBUG"
+			doc:name="LOG DEBUG : create account response"
+			doc:id="d90d1654-285f-46c6-ba86-099d1f50faff" message="#[payload]" />
+
+		<ee:transform doc:name="payload"
+			doc:id="b21b8c9c-30e5-4314-9b18-a644d100da39">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  ("id": vars.responseData.items[0].id) if (vars.responseData.items[0].id != null and vars.responseData.items[0].id != ""),
+  "success": if (vars.responseData.items[0].successful) true else false,
+  "message": if(vars.responseData.items[0].successful) "Account created successfully" else "Account couldn't create successfully"
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpStatus" ><![CDATA[201]]></ee:set-variable>
+			</ee:variables>
+		
+</ee:transform>
+	</flow>
+
+
+	<!-- GET ACCOUNT BY ID -->
+	<flow name="get-accounts-by-id"
+		doc:id="f92f9b74-4280-45ee-a9e3-30223eba4b35">
+		<set-variable value="#[attributes.uriParams.'id']"
+			doc:name="Account ID" doc:id="ce25d4d7-4ccd-432f-8176-08c004fb3208"
+			variableName="accountId" />
+		<salesforce:retrieve doc:name="Retrieve Account"
+			doc:id="750780fb-634d-4425-a82f-7eaa13912acf"
+			config-ref="Salesforce_Config" type="Account" target="responseData">
+			<salesforce:retrieve-request><![CDATA[#[output application/java
+---
+{
+	fields: ['Name,Type,Phone,Fax,BillingStreet,BillingCity,BillingState,BillingPostalCode,BillingCountry,ShippingStreet,ShippingCity,ShippingState,ShippingPostalCode,ShippingCountry'],
+	ids: [vars.accountId]
+} as Object {
+	class : "org.mule.extension.salesforce.api.core.RetrieveRequest"
+}]]]></salesforce:retrieve-request>
+		</salesforce:retrieve>
+		<ee:transform doc:name="Format to json"
+			doc:id="8bb92bb8-7c55-41d4-b519-b3bb3f2d0598">
+			<ee:message>
+				<ee:set-payload resource="dwl/getAccountResponse.dwl" />
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="httpStatus"><![CDATA[200]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="End request"
+			doc:id="63c13366-63ce-4c00-a908-5f5cec5ee15b"
+			message='#["END == get account by id: " ++ vars.accountId]' />
+	</flow>
+	
+	
+	<flow name="update-accounts-by-id"
+		doc:id="cf1e07b0-7487-47ab-a147-13d082ed8d2e">
+		<set-variable value="#[attributes.uriParams.'id']"
+			doc:name="Account ID" doc:id="56d39427-d9a1-4c34-9f7e-007827d30302"
+			variableName="accountId" />
+		<ee:transform doc:name="Prepare request payload"
+			doc:id="6c5bd9c8-94d2-4c61-b0c6-e7a7bd65d666">
+			<ee:message>
+				<ee:set-payload resource="dwl/updateAccountRequest.dwl" />
+			</ee:message>
+		</ee:transform>
+		<salesforce:update doc:name="Update Account"
+			doc:id="98b6ff0a-d95a-4cd1-b3f9-c9e57bf799f5"
+			config-ref="Salesforce_Config" type="Account" target="responseData"
+			targetValue="#[payload]" />
+		<logger level="DEBUG"
+			doc:name="DEBUG : update account response"
+			doc:id="155c5dae-88e7-446b-96f6-45fd1031eac1" message='#[payload]' />
+		<ee:transform doc:name="Prepare response payload"
+			doc:id="74c1ce44-3754-4ecb-abbd-dc2ecd2b8243">
+			<ee:message>
+				<ee:set-payload
+					resource="dwl/updateAccountResponse.dwl" />
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="httpStatus"><![CDATA[200]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</flow>
+	
+	
+	<flow name="delete-accounts-by-id"
+		doc:id="0da66525-bf78-49b1-b1b6-e3e2f4ebaed2">
+		<set-variable value="#[attributes.uriParams.'id']"
+			doc:name="Account ID" doc:id="ac1c5358-a997-459b-a4f3-bdd54c1780c3"
+			variableName="accountId" />
+		<salesforce:delete doc:name="Delete Account"
+			doc:id="8b8ffbf4-250b-4187-87e8-9ec58c4eb2e3"
+			config-ref="Salesforce_Config" target="responseData"
+			targetValue="#[payload]">
+			<salesforce:ids><![CDATA[#[output application/java
+---
+[vars.accountId]]]]></salesforce:ids>
+		</salesforce:delete>
+		<logger level="DEBUG"
+			doc:name="DEBUG : delete account response"
+			doc:id="ccd6657c-2477-4b93-a375-4dc766c88365" message='#[payload]' />
+		<ee:transform doc:name="Prepare response payload"
+			doc:id="51a596b5-bd59-46b7-937d-2375027eea0c">
+			<ee:message>
+				<ee:set-payload
+					resource="dwl/deleteAccountResponse.dwl" />
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="httpStatus"><![CDATA[200]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</flow>
+</mule>

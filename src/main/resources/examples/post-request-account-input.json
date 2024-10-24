@@ -1,0 +1,20 @@
+{
+    "Name": "Ankur",
+    "Fax": "238-238-29-99",
+    "Phone": "9590951206",
+    "Type": "Customer",
+    "BillingAddress": {
+        "street": "1255 26TH ST",
+        "city": "Bangalore",
+        "state": "Karnataka",
+        "postalCode": "560032",
+        "country": "India"
+    },
+    "ShippingAddress": {
+        "street": "Teacher's Colony",
+        "city": "Tezpur",
+        "state": "Assam",
+        "postalCode": "784507",
+        "country": "India"
+    }
+}

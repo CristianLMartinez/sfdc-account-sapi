@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="account-request" format="json">
+      <types:shape format="weave" example="examples/post-request-account-input.json"><![CDATA[%dw 2.0
+
+type account_request = {|
+  Name: String, 
+  Fax: String, 
+  Phone: String, 
+  Type: String, 
+  BillingAddress: {|
+    street: String, 
+    city: String, 
+    state: String, 
+    postalCode: String, 
+    country: String
+  |}, 
+  ShippingAddress: {|
+    street: String, 
+    city: String, 
+    state: String, 
+    postalCode: String, 
+    country: String
+  |}
+|} {"example": "{\\\"Name\\\":\\\"Ankur\\\",\\\"Fax\\\":\\\"238-238-29-99\\\",\\\"Phone\\\":\\\"9590951206\\\",\\\"Type\\\":\\\"Customer\\\",\\\"BillingAddress\\\":{\\\"street\\\":\\\"1255 26TH ST\\\",\\\"city\\\":\\\"Bangalore\\\",\\\"state\\\":\\\"Karnataka\\\",\\\"postalCode\\\":\\\"560032\\\",\\\"country\\\":\\\"India\\\"},\\\"ShippingAddress\\\":{\\\"street\\\":\\\"Teacher's Colony\\\",\\\"city\\\":\\\"Tezpur\\\",\\\"state\\\":\\\"Assam\\\",\\\"postalCode\\\":\\\"784507\\\",\\\"country\\\":\\\"India\\\"}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="sfdc-account" format="json">
+      <types:shape format="weave" example="examples/srfc-account.json"><![CDATA[%dw 2.0
+
+type sfdc_account = {|
+  ShippingLatitude: Number {"typeId": "double"}, 
+  BillingCity: String, 
+  JigsawCompanyId: String, 
+  "type": String, 
+  PersonActiveTrackerCount: Number {"typeId": "int"}, 
+  Name: String, 
+  Industry: String, 
+  BillingGeocodeAccuracy: String, 
+  AccountSource: String, 
+  BillingPostalCode: String, 
+  PhotoUrl: String, 
+  MasterRecordId: String, 
+  LastViewedDate: String, 
+  ShippingGeocodeAccuracy: String, 
+  ShippingStreet: String, 
+  IsBuyer: Boolean, 
+  ActivityMetricRollupId: String, 
+  ShippingPostalCode: String, 
+  CreatedDate: String, 
+  ShippingState: String, 
+  Id: String, 
+  SicDesc: String, 
+  BillingState: String, 
+  AnnualRevenue: Number {"typeId": "int"}, 
+  IsPartner: Boolean, 
+  Jigsaw: String, 
+  Description: String, 
+  Website: String, 
+  LastReferencedDate: String, 
+  BillingLatitude: Number {"typeId": "double"}, 
+  NumberOfEmployees: Number {"typeId": "int"}, 
+  BillingAddress: String, 
+  ActivityMetricId: String, 
+  OwnerId: String, 
+  BillingLongitude: Number {"typeId": "double"}, 
+  Phone: String, 
+  ShippingCountry: String, 
+  ShippingCity: String, 
+  ParentId: String, 
+  IsCustomerPortal: Boolean, 
+  SystemModstamp: String, 
+  Type: String, 
+  BillingCountry: String, 
+  BillingStreet: String, 
+  ShippingAddress: String, 
+  LastActivityDate: String, 
+  Fax: String, 
+  ShippingLongitude: Number {"typeId": "double"}, 
+  PersonScheduledResumeDateTime: String, 
+  LastModifiedDate: String, 
+  LastModifiedById: String, 
+  PersonActionCadenceId: String, 
+  IsDeleted: Boolean, 
+  PersonActionCadenceAssigneeId: String, 
+  CreatedById: String, 
+  PersonActionCadenceState: String
+|} {"example": "{\\\"ShippingLatitude\\\":0.0,\\\"BillingCity\\\":\\\"Sample City\\\",\\\"JigsawCompanyId\\\":\\\"JIG12345\\\",\\\"type\\\":\\\"Account\\\",\\\"PersonActiveTrackerCount\\\":0,\\\"Name\\\":\\\"Acme Corporation\\\",\\\"Industry\\\":\\\"Manufacturing\\\",\\\"BillingGeocodeAccuracy\\\":\\\"High\\\",\\\"AccountSource\\\":\\\"Referral\\\",\\\"BillingPostalCode\\\":\\\"12345\\\",\\\"PhotoUrl\\\":\\\"https:\\/\\/example.com\\/photo.jpg\\\",\\\"MasterRecordId\\\":\\\"MSTR12345\\\",\\\"LastViewedDate\\\":\\\"2024-10-22T01:58:32.000Z\\\",\\\"ShippingGeocodeAccuracy\\\":\\\"Medium\\\",\\\"ShippingStreet\\\":\\\"123 Shipping St\\\",\\\"IsBuyer\\\":false,\\\"ActivityMetricRollupId\\\":\\\"01KKd00000RrU4CMAV\\\",\\\"ShippingPostalCode\\\":\\\"54321\\\",\\\"CreatedDate\\\":\\\"2024-10-22T01:35:30.000Z\\\",\\\"ShippingState\\\":\\\"ShippingState\\\",\\\"Id\\\":\\\"001Kd00001l1NqWIAU\\\",\\\"SicDesc\\\":\\\"SIC Description\\\",\\\"BillingState\\\":\\\"BillingState\\\",\\\"AnnualRevenue\\\":5000000,\\\"IsPartner\\\":false,\\\"Jigsaw\\\":\\\"Jigsaw Information\\\",\\\"Description\\\":\\\"Leading manufacturer of widgets.\\\",\\\"Website\\\":\\\"https:\\/\\/example.com\\\",\\\"LastReferencedDate\\\":\\\"2024-10-22T01:58:32.000Z\\\",\\\"BillingLatitude\\\":37.7749,\\\"NumberOfEmployees\\\":200,\\\"BillingAddress\\\":\\\"123 Billing St\\\",\\\"ActivityMetricId\\\":\\\"0GqKd000002YFs0KAG\\\",\\\"OwnerId\\\":\\\"005Kd000004dff5IAA\\\",\\\"BillingLongitude\\\":-122.4194,\\\"Phone\\\":\\\"123-456-7890\\\",\\\"ShippingCountry\\\":\\\"USA\\\",\\\"ShippingCity\\\":\\\"Shipping City\\\",\\\"ParentId\\\":\\\"PARENT12345\\\",\\\"IsCustomerPortal\\\":false,\\\"SystemModstamp\\\":\\\"2024-10-22T01:35:30.000Z\\\",\\\"Type\\\":\\\"Customer\\\",\\\"BillingCountry\\\":\\\"USA\\\",\\\"BillingStreet\\\":\\\"123 Billing St\\\",\\\"ShippingAddress\\\":\\\"123 Shipping St\\\",\\\"LastActivityDate\\\":\\\"2024-10-21T14:20:00.000Z\\\",\\\"Fax\\\":\\\"123-456-7891\\\",\\\"ShippingLongitude\\\":-122.4194,\\\"PersonScheduledResumeDateTime\\\":\\\"2024-10-23T10:00:00.000Z\\\",\\\"LastModifiedDate\\\":\\\"2024-10-22T01:35:30.000Z\\\",\\\"LastModifiedById\\\":\\\"005Kd000004dff5IAA\\\",\\\"PersonActionCadenceId\\\":\\\"PAC12345\\\",\\\"IsDeleted\\\":false,\\\"PersonActionCadenceAssigneeId\\\":\\\"PACA12345\\\",\\\"CreatedById\\\":\\\"005Kd000004dff5IAA\\\",\\\"PersonActionCadenceState\\\":\\\"Active\\\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#858a2e01-5cc6-4cd9-8148-8ea899184ad9">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="account-request"/>
+          <types:attributes type="account-request"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="sfdc-account[]"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
