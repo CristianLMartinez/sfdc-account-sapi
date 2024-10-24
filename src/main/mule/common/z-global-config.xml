@@ -48,6 +48,7 @@ http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/m
 			securityToken="${secure::sfdc.token}" />
 	</salesforce:sfdc-config>
 	<configuration-properties doc:name="Configuration properties" doc:id="d0b5dc3f-0e76-415c-9801-84d0498f97fb" file="properties\config-DEV.yaml" />
+	<configuration doc:name="Configuration" doc:id="516d0ba3-0fd8-40bf-82eb-88899a42b22b" defaultErrorHandler-ref="globalErrorHandler"/>
 
 
 </mule>
