@@ -26,8 +26,8 @@ output application/json
 ---
 payload]]></ee:set-payload>
 			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="httpStatus" ><![CDATA[200]]></ee:set-variable>
+			<ee:variables>
+				<ee:set-variable variableName="httpStatus"><![CDATA[200]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<logger level="INFO" doc:name="End Request"
@@ -65,11 +65,10 @@ output application/json
   "message": if(vars.responseData.items[0].successful) "Account created successfully" else "Account couldn't create successfully"
 }]]></ee:set-payload>
 			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="httpStatus" ><![CDATA[201]]></ee:set-variable>
+			<ee:variables>
+				<ee:set-variable variableName="httpStatus"><![CDATA[201]]></ee:set-variable>
 			</ee:variables>
-		
-</ee:transform>
+		</ee:transform>
 	</flow>
 
 
@@ -91,7 +90,7 @@ output application/json
 	class : "org.mule.extension.salesforce.api.core.RetrieveRequest"
 }]]]></salesforce:retrieve-request>
 		</salesforce:retrieve>
-		<ee:transform doc:name="Format to json"
+		<ee:transform doc:name="DW Transform java to Json"
 			doc:id="8bb92bb8-7c55-41d4-b519-b3bb3f2d0598">
 			<ee:message>
 				<ee:set-payload resource="dwl/getAccountResponse.dwl" />
@@ -103,9 +102,10 @@ output application/json
 		<logger level="INFO" doc:name="End request"
 			doc:id="63c13366-63ce-4c00-a908-5f5cec5ee15b"
 			message='#["END == get account by id: " ++ vars.accountId]' />
+		<remove-variable doc:name="Remove AccountID"
+			doc:id="0414bcde-359d-48e6-ae7c-c3e1d8992745"
+			variableName="accountId" />
 	</flow>
-	
-	
 	<flow name="update-accounts-by-id"
 		doc:id="cf1e07b0-7487-47ab-a147-13d082ed8d2e">
 		<set-variable value="#[attributes.uriParams.'id']"
@@ -114,7 +114,8 @@ output application/json
 		<ee:transform doc:name="Prepare request payload"
 			doc:id="6c5bd9c8-94d2-4c61-b0c6-e7a7bd65d666">
 			<ee:message>
-				<ee:set-payload resource="dwl/updateAccountRequest.dwl" />
+				<ee:set-payload
+					resource="dwl/updateAccountRequest.dwl" />
 			</ee:message>
 		</ee:transform>
 		<salesforce:update doc:name="Update Account"
@@ -134,9 +135,10 @@ output application/json
 				<ee:set-variable variableName="httpStatus"><![CDATA[200]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
+		<remove-variable doc:name="Remove AccountID"
+			doc:id="53b8ae5a-fdae-486a-9bbb-1da06eb5e862"
+			variableName="accountId" />
 	</flow>
-	
-	
 	<flow name="delete-accounts-by-id"
 		doc:id="0da66525-bf78-49b1-b1b6-e3e2f4ebaed2">
 		<set-variable value="#[attributes.uriParams.'id']"
@@ -163,5 +165,8 @@ output application/json
 				<ee:set-variable variableName="httpStatus"><![CDATA[200]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
+		<remove-variable doc:name="Remove AccountID"
+			doc:id="92622806-4a9a-47ed-8b15-020fcd21ac47"
+			variableName="accountId" />
 	</flow>
 </mule>
